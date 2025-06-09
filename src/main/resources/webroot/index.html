@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Bonoloto</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://unpkg.com/vue-router@4"></script>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    const Home = {
+      template: `
+        <div>
+          <h1>Bonoloto</h1>
+          <button @click="update">Actualizar histórico</button>
+          <router-link to="/history"><button>Consultar histórico</button></router-link>
+        </div>
+      `,
+      methods: {
+        async update() {
+          try {
+            await fetch('/api/update');
+            alert('Actualizado');
+          } catch (e) {
+            alert('Error al actualizar');
+          }
+        }
+      }
+    };
+
+    const History = {
+      data() { return { rows: [] }; },
+      async created() {
+        const res = await fetch('/api/history');
+        const text = await res.text();
+        this.rows = text.trim().split('\n').map(l => l.split(','));
+      },
+      template: `
+        <div>
+          <h1>Histórico</h1>
+          <router-link to="/">Volver</router-link>
+          <table border="1">
+            <tr v-for="row in rows" :key="row[0]">
+              <td v-for="cell in row">{{ cell }}</td>
+            </tr>
+          </table>
+        </div>
+      `
+    };
+
+    const routes = [
+      { path: '/', component: Home },
+      { path: '/history', component: History }
+    ];
+
+    const router = VueRouter.createRouter({
+      history: VueRouter.createWebHashHistory(),
+      routes
+    });
+
+    const app = Vue.createApp({});
+    app.use(router);
+    app.mount('#app');
+  </script>
+</body>
+</html>

@@ -10,6 +10,7 @@ maven.install(
     name = "maven",
     artifacts = [
         "io.vertx:vertx-core:4.5.1",
+        "io.vertx:vertx-web:4.5.1",
         # Include MacOS native DNS resolver to avoid runtime warnings on Mac
         "io.netty:netty-resolver-dns-native-macos:4.1.103.Final:osx-aarch_64",
     ],

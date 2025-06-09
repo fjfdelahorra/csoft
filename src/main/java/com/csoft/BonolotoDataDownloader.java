@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Utility class to download the historical Bonoloto results CSV and remove
@@ -21,12 +22,14 @@ import java.util.List;
 public class BonolotoDataDownloader {
     private static final String DATA_URL =
         "https://docs.google.com/spreadsheets/d/e/2PACX-1vQALTRaLDFfhXOAQmeONPqmFKm9yOiQ4W97rhWgR41BZ7czFsjK5YktD6fnETKHGB9YUnyQ4XBSbhZx/pub?gid=0&single=true&output=csv";
+    private static final Logger LOGGER = Logger.getLogger(BonolotoDataDownloader.class.getName());
 
     /**
      * Downloads the CSV, removes lines that don't have exactly nine columns and
      * writes the cleaned content to the provided path.
      */
     public static void downloadAndClean(Path outputPath) throws IOException, InterruptedException {
+        LOGGER.info("Descargando datos desde " + DATA_URL);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder(URI.create(DATA_URL)).build();
         HttpResponse<java.io.InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
@@ -49,6 +52,7 @@ public class BonolotoDataDownloader {
                 writer.newLine();
             }
         }
+        LOGGER.info("Datos guardados en " + outputPath.toAbsolutePath());
     }
 
     public static void main(String[] args) throws Exception {

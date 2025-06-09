@@ -1,0 +1,3 @@
+bazel-*
+server.log
+*.log

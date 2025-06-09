@@ -30,7 +30,9 @@ public class BonolotoDataDownloader {
      */
     public static void downloadAndClean(Path outputPath) throws IOException, InterruptedException {
         LOGGER.info("Descargando datos desde " + DATA_URL);
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.ALWAYS)
+                .build();
         HttpRequest request = HttpRequest.newBuilder(URI.create(DATA_URL)).build();
         HttpResponse<java.io.InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
 

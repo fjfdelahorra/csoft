@@ -6,3 +6,12 @@ java_binary(
         "@maven//:io_vertx_vertx_core",
     ],
 )
+
+java_binary(
+    name = "bonoloto_downloader",
+    srcs = glob(["src/main/java/**/*.java"]),
+    main_class = "com.csoft.BonolotoDataDownloader",
+    deps = [
+        "@maven//:io_vertx_vertx_core",
+    ],
+)

@@ -19,9 +19,10 @@ public class MainVerticle extends AbstractVerticle {
         router.get("/api/update").handler(ctx -> {
             try {
                 Path out = Path.of("data/history.csv");
-                LOGGER.info("Actualizando historico");
+                LOGGER.info("Actualizando historico en " + out.toAbsolutePath());
                 BonolotoDataDownloader.downloadAndClean(out);
-                LOGGER.info("Actualizacion finalizada");
+                long size = Files.size(out);
+                LOGGER.info("Actualizacion finalizada. Tama\u00f1o del fichero: " + size + " bytes");
                 ctx.response().putHeader("Content-Type", "application/json")
                     .end("{\"status\":\"ok\"}");
             } catch (Exception e) {
@@ -36,7 +37,8 @@ public class MainVerticle extends AbstractVerticle {
                     ctx.response().setStatusCode(404).end();
                     return;
                 }
-                LOGGER.info("Sirviendo historico");
+                long size = Files.size(path);
+                LOGGER.info("Sirviendo historico desde " + path.toAbsolutePath() + " (" + size + " bytes)");
                 String csv = Files.readString(path);
                 ctx.response().putHeader("Content-Type", "text/csv").end(csv);
             } catch (Exception e) {

@@ -34,16 +34,24 @@ public class BonolotoDataDownloader {
         HttpRequest request = HttpRequest.newBuilder(URI.create(DATA_URL)).build();
         HttpResponse<java.io.InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
 
+        LOGGER.info("Codigo de respuesta: " + response.statusCode());
+
+        byte[] allBytes = response.body().readAllBytes();
+        LOGGER.info("Descargados " + allBytes.length + " bytes");
+
         List<String> validLines = new ArrayList<>();
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(response.body(), StandardCharsets.UTF_8))) {
+        int totalLines = 0;
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(new java.io.ByteArrayInputStream(allBytes), StandardCharsets.UTF_8))) {
             String line;
             while ((line = br.readLine()) != null) {
+                totalLines++;
                 String[] parts = line.split(",", -1);
                 if (parts.length == 9) {
                     validLines.add(line);
                 }
             }
         }
+        LOGGER.info("Lineas totales: " + totalLines + ", lineas validas: " + validLines.size());
 
         Files.createDirectories(outputPath.getParent());
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {

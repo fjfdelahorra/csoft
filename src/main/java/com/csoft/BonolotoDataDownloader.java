@@ -42,6 +42,7 @@ public class BonolotoDataDownloader {
             }
         }
 
+        Files.createDirectories(outputPath.getParent());
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardCharsets.UTF_8)) {
             for (String l : validLines) {
                 writer.write(l);

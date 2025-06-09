@@ -6,15 +6,15 @@ module(
 bazel_dep(name = "rules_jvm_external", version = "6.2")
 
 maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
-
 maven.install(
     name = "maven",
     artifacts = [
         "io.vertx:vertx-core:4.5.1",
+        # Include MacOS native DNS resolver to avoid runtime warnings on Mac
+        "io.netty:netty-resolver-dns-native-macos:4.1.103.Final:osx-aarch_64",
     ],
     repositories = [
         "https://repo.maven.apache.org/maven2",
     ],
 )
-
 use_repo(maven, "maven")

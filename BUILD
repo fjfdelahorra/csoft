@@ -11,7 +11,7 @@ java_binary(
 
 java_binary(
     name = "bonoloto_downloader",
-    srcs = glob(["src/main/java/**/*.java"]),
+    srcs = ["src/main/java/com/csoft/BonolotoDataDownloader.java"],
     main_class = "com.csoft.BonolotoDataDownloader",
     deps = [
         "@maven//:io_vertx_vertx_core",

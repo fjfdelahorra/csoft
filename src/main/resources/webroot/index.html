@@ -57,8 +57,7 @@
         return { rows: [], page: 1, pageSize: 20, total: 0 };
       },
       computed: {
-        totalPages() { return Math.ceil(this.total / this.pageSize); },
-        pages() { return Array.from({length: this.totalPages}, (_, i) => i + 1); }
+        totalPages() { return Math.ceil(this.total / this.pageSize); }
       },
       methods: {
         async load() {
@@ -69,7 +68,8 @@
         },
         next() { if (this.page < this.totalPages) { this.page++; this.load(); } },
         prev() { if (this.page > 1) { this.page--; this.load(); } },
-        go(p) { if (p !== this.page && p >= 1 && p <= this.totalPages) { this.page = p; this.load(); } }
+        first() { if (this.page !== 1) { this.page = 1; this.load(); } },
+        last() { if (this.page !== this.totalPages) { this.page = this.totalPages; this.load(); } }
       },
       async created() { await this.load(); },
       template: `
@@ -88,13 +88,19 @@
           <nav aria-label="Histórico navigation">
             <ul class="pagination justify-content-center mb-0">
               <li class="page-item" :class="{disabled: page===1}">
+                <button class="page-link" @click="first">Inicio</button>
+              </li>
+              <li class="page-item" :class="{disabled: page===1}">
                 <button class="page-link" @click="prev">Anterior</button>
               </li>
-              <li class="page-item" v-for="p in pages" :key="p" :class="{active: p===page}">
-                <button class="page-link" @click="go(p)">{{ p }}</button>
+              <li class="page-item disabled">
+                <span class="page-link">{{ page }} / {{ totalPages }}</span>
               </li>
               <li class="page-item" :class="{disabled: page===totalPages}">
                 <button class="page-link" @click="next">Siguiente</button>
+              </li>
+              <li class="page-item" :class="{disabled: page===totalPages}">
+                <button class="page-link" @click="last">Fin</button>
               </li>
             </ul>
           </nav>
@@ -107,8 +113,7 @@
         return { rows: [], page: 1, pageSize: 20, total: 0 };
       },
       computed: {
-        totalPages() { return Math.ceil(this.total / this.pageSize); },
-        pages() { return Array.from({length: this.totalPages}, (_, i) => i + 1); }
+        totalPages() { return Math.ceil(this.total / this.pageSize); }
       },
       methods: {
         async load() {
@@ -119,7 +124,8 @@
         },
         next() { if (this.page < this.totalPages) { this.page++; this.load(); } },
         prev() { if (this.page > 1) { this.page--; this.load(); } },
-        go(p) { if (p !== this.page && p >= 1 && p <= this.totalPages) { this.page = p; this.load(); } }
+        first() { if (this.page !== 1) { this.page = 1; this.load(); } },
+        last() { if (this.page !== this.totalPages) { this.page = this.totalPages; this.load(); } }
       },
       async created() { await this.load(); },
       template: `
@@ -138,13 +144,19 @@
           <nav aria-label="Estadísticas navigation">
             <ul class="pagination justify-content-center mb-0">
               <li class="page-item" :class="{disabled: page===1}">
+                <button class="page-link" @click="first">Inicio</button>
+              </li>
+              <li class="page-item" :class="{disabled: page===1}">
                 <button class="page-link" @click="prev">Anterior</button>
               </li>
-              <li class="page-item" v-for="p in pages" :key="p" :class="{active: p===page}">
-                <button class="page-link" @click="go(p)">{{ p }}</button>
+              <li class="page-item disabled">
+                <span class="page-link">{{ page }} / {{ totalPages }}</span>
               </li>
               <li class="page-item" :class="{disabled: page===totalPages}">
                 <button class="page-link" @click="next">Siguiente</button>
+              </li>
+              <li class="page-item" :class="{disabled: page===totalPages}">
+                <button class="page-link" @click="last">Fin</button>
               </li>
             </ul>
           </nav>

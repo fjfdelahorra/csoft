@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.logging.Logger;
 
 import com.csoft.BonolotoDataDownloader;
+import com.csoft.BonolotoStats;
 
 public class MainVerticle extends AbstractVerticle {
     private static final Logger LOGGER = Logger.getLogger(MainVerticle.class.getName());
@@ -41,6 +42,25 @@ public class MainVerticle extends AbstractVerticle {
                 LOGGER.info("Sirviendo historico desde " + path.toAbsolutePath() + " (" + size + " bytes)");
                 String csv = Files.readString(path);
                 ctx.response().putHeader("Content-Type", "text/csv").end(csv);
+            } catch (Exception e) {
+                ctx.fail(e);
+            }
+        });
+
+        router.get("/api/stats").handler(ctx -> {
+            try {
+                Path path = Path.of("data/history.csv");
+                if (!Files.exists(path)) {
+                    ctx.response().setStatusCode(404).end();
+                    return;
+                }
+                var stats = BonolotoStats.compute(path);
+                StringBuilder sb = new StringBuilder();
+                sb.append("FECHA,EVEN,ODD\n");
+                for (var s : stats) {
+                    sb.append(s.date).append(',').append(s.even).append(',').append(s.odd).append('\n');
+                }
+                ctx.response().putHeader("Content-Type", "text/csv").end(sb.toString());
             } catch (Exception e) {
                 ctx.fail(e);
             }

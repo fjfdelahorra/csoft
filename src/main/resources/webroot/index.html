@@ -7,6 +7,11 @@
   <script src="/js/vue.global.js"></script>
   <script src="/js/vue-router.global.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <style>
+    .bono-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: .25rem; max-width: 280px; margin: 0 auto; }
+    .bono-num { border: 1px solid #ccc; border-radius: 4px; padding: .5rem 0; text-align: center; }
+    .bono-num.selected { background-color: #0d6efd; color: #fff; }
+  </style>
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -23,6 +28,9 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/stats">Estadísticas</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/generate">Generador</router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -37,6 +45,7 @@
             <button class="btn btn-primary" @click="update">Actualizar histórico</button>
             <router-link to="/history" class="btn btn-secondary">Ver histórico</router-link>
             <router-link to="/stats" class="btn btn-secondary">Estadísticas</router-link>
+            <router-link to="/generate" class="btn btn-secondary">Generador</router-link>
           </div>
         </div>
       `,
@@ -164,10 +173,37 @@
       `
     };
 
+  const Generator = {
+      data() {
+        return { selected: [] };
+      },
+      methods: {
+        generate() {
+          const nums = Array.from({ length: 49 }, (_, i) => i + 1);
+          this.selected = [];
+          for (let i = 0; i < 6; i++) {
+            const idx = Math.floor(Math.random() * nums.length);
+            this.selected.push(nums.splice(idx, 1)[0]);
+          }
+        }
+      },
+      template: `
+        <div class="text-center">
+          <h1 class="mb-4">Generador</h1>
+          <router-link to="/" class="btn btn-link p-0 mb-3">Volver</router-link>
+          <div class="bono-grid mb-3">
+            <div v-for="n in 49" :key="n" class="bono-num" :class="{selected: selected.includes(n)}">{{ n }}</div>
+          </div>
+          <button class="btn btn-primary" @click="generate">Generar</button>
+        </div>
+      `
+    };
+
     const routes = [
       { path: '/', component: Home },
       { path: '/history', component: History },
-      { path: '/stats', component: Stats }
+      { path: '/stats', component: Stats },
+      { path: '/generate', component: Generator }
     ];
 
     const router = VueRouter.createRouter({

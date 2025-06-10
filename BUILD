@@ -17,3 +17,9 @@ java_binary(
         "@maven//:io_vertx_vertx_core",
     ],
 )
+
+java_binary(
+    name = "bonoloto_stats",
+    srcs = ["src/main/java/com/csoft/BonolotoStats.java"],
+    main_class = "com.csoft.BonolotoStats",
+)

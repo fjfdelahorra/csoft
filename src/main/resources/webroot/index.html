@@ -53,12 +53,23 @@
     };
 
   const History = {
-      data() { return { rows: [] }; },
-      async created() {
-        const res = await fetch('/api/history');
-        const text = await res.text();
-        this.rows = text.trim().split('\n').map(l => l.split(','));
+      data() {
+        return { rows: [], page: 1, pageSize: 20, total: 0 };
       },
+      computed: {
+        totalPages() { return Math.ceil(this.total / this.pageSize); }
+      },
+      methods: {
+        async load() {
+          const res = await fetch(`/api/history?page=${this.page}&size=${this.pageSize}`);
+          const text = await res.text();
+          this.total = parseInt(res.headers.get('X-Total-Count') || '0');
+          this.rows = text.trim().split('\n').map(l => l.split(','));
+        },
+        next() { if (this.page < this.totalPages) { this.page++; this.load(); } },
+        prev() { if (this.page > 1) { this.page--; this.load(); } }
+      },
+      async created() { await this.load(); },
       template: `
         <div>
           <h1>Histórico</h1>
@@ -72,17 +83,33 @@
               </tbody>
             </table>
           </div>
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-secondary" @click="prev" :disabled="page===1">Anterior</button>
+            <span>Página {{ page }} de {{ totalPages }}</span>
+            <button class="btn btn-secondary" @click="next" :disabled="page===totalPages">Siguiente</button>
+          </div>
         </div>
       `
     };
 
   const Stats = {
-      data() { return { rows: [] }; },
-      async created() {
-        const res = await fetch('/api/stats');
-        const text = await res.text();
-        this.rows = text.trim().split('\n').map(l => l.split(','));
+      data() {
+        return { rows: [], page: 1, pageSize: 20, total: 0 };
       },
+      computed: {
+        totalPages() { return Math.ceil(this.total / this.pageSize); }
+      },
+      methods: {
+        async load() {
+          const res = await fetch(`/api/stats?page=${this.page}&size=${this.pageSize}`);
+          const text = await res.text();
+          this.total = parseInt(res.headers.get('X-Total-Count') || '0');
+          this.rows = text.trim().split('\n').map(l => l.split(','));
+        },
+        next() { if (this.page < this.totalPages) { this.page++; this.load(); } },
+        prev() { if (this.page > 1) { this.page--; this.load(); } }
+      },
+      async created() { await this.load(); },
       template: `
         <div>
           <h1>Estadísticas</h1>
@@ -95,6 +122,11 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-secondary" @click="prev" :disabled="page===1">Anterior</button>
+            <span>Página {{ page }} de {{ totalPages }}</span>
+            <button class="btn btn-secondary" @click="next" :disabled="page===totalPages">Siguiente</button>
           </div>
         </div>
       `

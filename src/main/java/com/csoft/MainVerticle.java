@@ -56,9 +56,13 @@ public class MainVerticle extends AbstractVerticle {
                 }
                 var stats = BonolotoStats.compute(path);
                 StringBuilder sb = new StringBuilder();
-                sb.append("FECHA,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC\n");
+                sb.append("FECHA,N1,N2,N3,N4,N5,N6,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC\n");
                 for (var s : stats) {
-                    sb.append(s.date).append(',').append(s.even).append(',').append(s.odd)
+                    sb.append(s.date);
+                    for (int n : s.numbers) {
+                        sb.append(',').append(n);
+                    }
+                    sb.append(',').append(s.even).append(',').append(s.odd)
                       .append(',').append(s.tens[0]).append(',').append(s.tens[1])
                       .append(',').append(s.tens[2]).append(',').append(s.tens[3])
                       .append(',').append(s.tens[4]).append(',').append(s.consecutive)

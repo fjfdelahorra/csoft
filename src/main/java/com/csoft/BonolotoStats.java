@@ -11,13 +11,16 @@ import java.util.List;
 public class BonolotoStats {
     public static class DrawStat {
         public final String date;
+        /** Winning combination numbers */
+        public final int[] numbers;
         public final int even;
         public final int odd;
         public final int[] tens; // counts of numbers in each tens range
         public final int consecutive; // longest streak of consecutive numbers
 
-        public DrawStat(String date, int even, int odd, int[] tens, int consecutive) {
+        public DrawStat(String date, int[] numbers, int even, int odd, int[] tens, int consecutive) {
             this.date = date;
+            this.numbers = numbers;
             this.even = even;
             this.odd = odd;
             this.tens = tens;
@@ -72,7 +75,7 @@ public class BonolotoStats {
                     }
                 }
 
-                list.add(new DrawStat(parts[0], even, odd, tens, maxRun));
+                list.add(new DrawStat(parts[0], numbers, even, odd, tens, maxRun));
             }
         }
         return list;
@@ -81,11 +84,18 @@ public class BonolotoStats {
     public static void main(String[] args) throws Exception {
         Path path = Path.of(args.length > 0 ? args[0] : "data/history.csv");
         List<DrawStat> stats = compute(path);
-        System.out.println("FECHA,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC");
+        System.out.println("FECHA,N1,N2,N3,N4,N5,N6,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC");
         for (DrawStat s : stats) {
-            System.out.println(s.date + "," + s.even + "," + s.odd + "," +
-                    s.tens[0] + "," + s.tens[1] + "," + s.tens[2] + "," +
-                    s.tens[3] + "," + s.tens[4] + "," + s.consecutive);
+            StringBuilder sb = new StringBuilder();
+            sb.append(s.date);
+            for (int n : s.numbers) {
+                sb.append(',').append(n);
+            }
+            sb.append(',').append(s.even).append(',').append(s.odd)
+              .append(',').append(s.tens[0]).append(',').append(s.tens[1])
+              .append(',').append(s.tens[2]).append(',').append(s.tens[3])
+              .append(',').append(s.tens[4]).append(',').append(s.consecutive);
+            System.out.println(sb);
         }
     }
 }

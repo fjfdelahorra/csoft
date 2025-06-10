@@ -56,9 +56,13 @@ public class MainVerticle extends AbstractVerticle {
                 }
                 var stats = BonolotoStats.compute(path);
                 StringBuilder sb = new StringBuilder();
-                sb.append("FECHA,EVEN,ODD\n");
+                sb.append("FECHA,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC\n");
                 for (var s : stats) {
-                    sb.append(s.date).append(',').append(s.even).append(',').append(s.odd).append('\n');
+                    sb.append(s.date).append(',').append(s.even).append(',').append(s.odd)
+                      .append(',').append(s.tens[0]).append(',').append(s.tens[1])
+                      .append(',').append(s.tens[2]).append(',').append(s.tens[3])
+                      .append(',').append(s.tens[4]).append(',').append(s.consecutive)
+                      .append('\n');
                 }
                 ctx.response().putHeader("Content-Type", "text/csv").end(sb.toString());
             } catch (Exception e) {

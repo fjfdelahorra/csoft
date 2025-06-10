@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class BonolotoStats {
@@ -61,6 +62,8 @@ public class BonolotoStats {
                         tens[4]++;
                     }
                 }
+
+                Arrays.sort(numbers);
 
                 int maxRun = 1;
                 int currentRun = 1;

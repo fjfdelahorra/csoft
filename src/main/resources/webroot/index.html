@@ -20,6 +20,9 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/history">Histórico</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/stats">Estadísticas</router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -33,6 +36,7 @@
           <div class="d-grid gap-2 col-6 mx-auto">
             <button class="btn btn-primary" @click="update">Actualizar histórico</button>
             <router-link to="/history" class="btn btn-secondary">Ver histórico</router-link>
+            <router-link to="/stats" class="btn btn-secondary">Estadísticas</router-link>
           </div>
         </div>
       `,
@@ -72,9 +76,34 @@
       `
     };
 
+  const Stats = {
+      data() { return { rows: [] }; },
+      async created() {
+        const res = await fetch('/api/stats');
+        const text = await res.text();
+        this.rows = text.trim().split('\n').map(l => l.split(','));
+      },
+      template: `
+        <div>
+          <h1>Estadísticas Pares/Impares</h1>
+          <router-link to="/" class="btn btn-link p-0 mb-3">Volver</router-link>
+          <div class="table-responsive">
+            <table class="table table-striped table-bordered">
+              <tbody>
+                <tr v-for="row in rows" :key="row[0]">
+                  <td v-for="cell in row">{{ cell }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `
+    };
+
     const routes = [
       { path: '/', component: Home },
-      { path: '/history', component: History }
+      { path: '/history', component: History },
+      { path: '/stats', component: Stats }
     ];
 
     const router = VueRouter.createRouter({

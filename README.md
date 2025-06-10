@@ -16,7 +16,8 @@ bazel run //:vertx_hello
 Al ejecutarlo, se inicia un servidor HTTP en el puerto `8080` que sirve la página
 web Vue.js disponible en [http://localhost:8080](http://localhost:8080). Desde
 la página principal puedes actualizar el histórico de sorteos y consultar los
-resultados descargados.
+resultados descargados. Ahora también puedes consultar las estadísticas de pares
+e impares desde el enlace **Estadísticas** de la propia interfaz.
 
 ## Obtener estadísticas de pares e impares
 

@@ -38,10 +38,27 @@ public class MainVerticle extends AbstractVerticle {
                     ctx.response().setStatusCode(404).end();
                     return;
                 }
-                long size = Files.size(path);
-                LOGGER.info("Sirviendo historico desde " + path.toAbsolutePath() + " (" + size + " bytes)");
-                String csv = Files.readString(path);
-                ctx.response().putHeader("Content-Type", "text/csv").end(csv);
+
+                int page = Integer.parseInt(ctx.request().getParam("page", "1"));
+                int size = Integer.parseInt(ctx.request().getParam("size", "20"));
+                if (page < 1) page = 1;
+                if (size < 1) size = 20;
+
+                var lines = Files.readAllLines(path);
+                String header = lines.isEmpty() ? "" : lines.get(0);
+                var data = lines.size() > 1 ? lines.subList(1, lines.size()) : java.util.Collections.<String>emptyList();
+                int total = data.size();
+                int start = Math.min((page - 1) * size, total);
+                int end = Math.min(start + size, total);
+                var slice = data.subList(start, end);
+
+                StringBuilder sb = new StringBuilder();
+                if (!header.isEmpty()) sb.append(header).append('\n');
+                for (String l : slice) sb.append(l).append('\n');
+
+                ctx.response().putHeader("Content-Type", "text/csv")
+                    .putHeader("X-Total-Count", Integer.toString(total))
+                    .end(sb.toString());
             } catch (Exception e) {
                 ctx.fail(e);
             }
@@ -54,10 +71,21 @@ public class MainVerticle extends AbstractVerticle {
                     ctx.response().setStatusCode(404).end();
                     return;
                 }
+
+                int page = Integer.parseInt(ctx.request().getParam("page", "1"));
+                int size = Integer.parseInt(ctx.request().getParam("size", "20"));
+                if (page < 1) page = 1;
+                if (size < 1) size = 20;
+
                 var stats = BonolotoStats.compute(path);
+                int total = stats.size();
+                int start = Math.min((page - 1) * size, total);
+                int end = Math.min(start + size, total);
+
                 StringBuilder sb = new StringBuilder();
                 sb.append("FECHA,N1,N2,N3,N4,N5,N6,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC\n");
-                for (var s : stats) {
+                for (int i = start; i < end; i++) {
+                    var s = stats.get(i);
                     sb.append(s.date);
                     for (int n : s.numbers) {
                         sb.append(',').append(n);
@@ -68,7 +96,9 @@ public class MainVerticle extends AbstractVerticle {
                       .append(',').append(s.tens[4]).append(',').append(s.consecutive)
                       .append('\n');
                 }
-                ctx.response().putHeader("Content-Type", "text/csv").end(sb.toString());
+                ctx.response().putHeader("Content-Type", "text/csv")
+                    .putHeader("X-Total-Count", Integer.toString(total))
+                    .end(sb.toString());
             } catch (Exception e) {
                 ctx.fail(e);
             }

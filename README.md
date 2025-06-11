@@ -27,5 +27,5 @@ Puedes calcular las estadísticas (pares/impares, reparto por decenas y rachas d
 bazel run //:bonoloto_stats -- path/al/fichero.csv
 ```
 
-La salida es un CSV con las columnas `FECHA`, `N1`-`N6` (números de la combinación ganadora), `EVEN`, `ODD`, `D1`-`D5` (números en las decenas 1‑9, 10‑19, 20‑29, 30‑39 y 40‑49) y `CONSEC`, la longitud máxima de números consecutivos en la combinación.
+La salida es un CSV con las columnas `FECHA`, `N1`‑`N6` (números de la combinación ganadora), `COMP` (complementario), `EVEN`, `ODD`, `D1`‑`D5` (números en las decenas 1‑9, 10‑19, 20‑29, 30‑39 y 40‑49) y `CONSEC`, la longitud máxima de números consecutivos en la combinación.
 

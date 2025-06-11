@@ -83,13 +83,14 @@ public class MainVerticle extends AbstractVerticle {
                 int end = Math.min(start + size, total);
 
                 StringBuilder sb = new StringBuilder();
-                sb.append("FECHA,N1,N2,N3,N4,N5,N6,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC\n");
+                sb.append("FECHA,N1,N2,N3,N4,N5,N6,COMP,EVEN,ODD,D1,D2,D3,D4,D5,CONSEC\n");
                 for (int i = start; i < end; i++) {
                     var s = stats.get(i);
                     sb.append(s.date);
                     for (int n : s.numbers) {
                         sb.append(',').append(n);
                     }
+                    sb.append(',').append(s.complement);
                     sb.append(',').append(s.even).append(',').append(s.odd)
                       .append(',').append(s.tens[0]).append(',').append(s.tens[1])
                       .append(',').append(s.tens[2]).append(',').append(s.tens[3])

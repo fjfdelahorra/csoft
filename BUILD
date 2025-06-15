@@ -23,3 +23,12 @@ java_binary(
     srcs = ["src/main/java/com/csoft/BonolotoStats.java"],
     main_class = "com.csoft.BonolotoStats",
 )
+
+java_binary(
+    name = "bonoloto_evolver",
+    srcs = [
+        "src/main/java/com/csoft/BonolotoEvolver.java",
+        "src/main/java/com/csoft/BonolotoStats.java",
+    ],
+    main_class = "com.csoft.BonolotoEvolver",
+)

@@ -31,6 +31,9 @@
           <li class="nav-item">
             <router-link class="nav-link" to="/generate">Generador</router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/evolver">Evolutivo</router-link>
+          </li>
         </ul>
       </div>
     </div>
@@ -46,6 +49,7 @@
             <router-link to="/history" class="btn btn-secondary">Ver histórico</router-link>
             <router-link to="/stats" class="btn btn-secondary">Estadísticas</router-link>
             <router-link to="/generate" class="btn btn-secondary">Generador</router-link>
+            <router-link to="/evolver" class="btn btn-secondary">Evolutivo</router-link>
           </div>
         </div>
       `,
@@ -218,11 +222,42 @@
       `
     };
 
+  const Evolver = {
+      data() {
+        return { logs: [], running: false };
+      },
+      methods: {
+        async run() {
+          this.running = true;
+          try {
+            const res = await fetch('/api/evolve');
+            const json = await res.json();
+            this.logs = json.steps.concat([`Mejor: ${json.best.join(', ')} puntuación ${json.score}`]);
+          } catch (e) {
+            alert('Error al ejecutar');
+          } finally {
+            this.running = false;
+          }
+        }
+      },
+      template: `
+        <div class="text-center">
+          <h1 class="mb-4">Algoritmo Evolutivo</h1>
+          <router-link to="/" class="btn btn-link p-0 mb-3">Volver</router-link>
+          <div class="mb-3">
+            <button class="btn btn-primary" @click="run" :disabled="running">Ejecutar</button>
+          </div>
+          <pre class="text-start">{{ logs.join('\n') }}</pre>
+        </div>
+      `
+    };
+
     const routes = [
       { path: '/', component: Home },
       { path: '/history', component: History },
       { path: '/stats', component: Stats },
-      { path: '/generate', component: Generator }
+      { path: '/generate', component: Generator },
+      { path: '/evolver', component: Evolver }
     ];
 
     const router = VueRouter.createRouter({

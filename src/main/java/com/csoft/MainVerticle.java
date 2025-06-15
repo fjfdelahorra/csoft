@@ -6,10 +6,13 @@ import io.vertx.ext.web.Router;
 import io.vertx.ext.web.handler.StaticHandler;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 import java.util.logging.Logger;
 
 import com.csoft.BonolotoDataDownloader;
 import com.csoft.BonolotoStats;
+import com.csoft.BonolotoEvolver;
 
 public class MainVerticle extends AbstractVerticle {
     private static final Logger LOGGER = Logger.getLogger(MainVerticle.class.getName());
@@ -103,6 +106,29 @@ public class MainVerticle extends AbstractVerticle {
             } catch (Exception e) {
                 ctx.fail(e);
             }
+        });
+
+        router.get("/api/evolve").handler(ctx -> {
+            vertx.<BonolotoEvolver.EvolutionResult>executeBlocking(promise -> {
+                try {
+                    var res = BonolotoEvolver.evolve(Path.of("data/history.csv"));
+                    promise.complete(res);
+                } catch (Exception e) {
+                    promise.fail(e);
+                }
+            }, ar -> {
+                if (ar.succeeded()) {
+                    var res = ar.result();
+                    var json = new io.vertx.core.json.JsonObject()
+                            .put("best", Arrays.stream(res.best).boxed().collect(Collectors.toList()))
+                            .put("score", res.score)
+                            .put("steps", res.steps);
+                    ctx.response().putHeader("Content-Type", "application/json")
+                        .end(json.encode());
+                } else {
+                    ctx.fail(ar.cause());
+                }
+            });
         });
 
         router.route().handler(StaticHandler.create("webroot"));

@@ -19,6 +19,18 @@ public class BonolotoEvolver {
     private static final int ELITE_SIZE = 20;
     private static final int GENERATIONS = 50;
 
+    public static class EvolutionResult {
+        public final List<String> steps;
+        public final int[] best;
+        public final double score;
+
+        EvolutionResult(List<String> steps, int[] best, double score) {
+            this.steps = steps;
+            this.best = best;
+            this.score = score;
+        }
+    }
+
     private static final class Stats {
         double avgEven;
         double[] avgTens = new double[5];
@@ -177,6 +189,51 @@ public class BonolotoEvolver {
             combo[idx] = newVal;
             Arrays.sort(combo);
         }
+    }
+
+    /**
+     * Runs the evolutionary algorithm using the provided CSV file with the
+     * historical draws. The returned result includes the log of each generation
+     * along with the best combination found and its score.
+     */
+    public static EvolutionResult evolve(Path csv) throws IOException {
+        Stats tmpStats;
+        try {
+            tmpStats = loadStats(csv);
+        } catch (IOException e) {
+            tmpStats = new Stats();
+        }
+        final Stats stats = tmpStats;
+        Random rnd = new Random();
+        List<int[]> population = generatePopulation(rnd);
+        int[] best = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
+        List<String> steps = new ArrayList<>();
+
+        for (int gen = 1; gen <= GENERATIONS; gen++) {
+            population.sort((x, y) -> Double.compare(fitness(y, stats), fitness(x, stats)));
+            double score = fitness(population.get(0), stats);
+            if (score > bestScore) {
+                bestScore = score;
+                best = Arrays.copyOf(population.get(0), 6);
+            }
+            steps.add("Generacion " + gen + " mejor puntuacion " + score + " combinacion "
+                    + Arrays.toString(population.get(0)));
+
+            List<int[]> next = new ArrayList<>();
+            for (int i = 0; i < ELITE_SIZE; i++) next.add(Arrays.copyOf(population.get(i), 6));
+            while (next.size() < POPULATION_SIZE) {
+                int[] p1 = population.get(rnd.nextInt(ELITE_SIZE));
+                int[] p2 = population.get(rnd.nextInt(ELITE_SIZE));
+                int[] child = crossover(p1, p2, rnd);
+                mutate(child, rnd);
+                next.add(child);
+            }
+            population = next;
+        }
+
+        steps.add("Mejor combinacion obtenida: " + Arrays.toString(best) + " con puntuacion " + bestScore);
+        return new EvolutionResult(steps, best, bestScore);
     }
 
     public static void main(String[] args) throws Exception {

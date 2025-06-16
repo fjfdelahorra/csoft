@@ -158,8 +158,13 @@ public class BonolotoEvolver {
 
     private static List<int[]> generatePopulation(Random rnd) {
         List<int[]> list = new ArrayList<>();
-        for (int i = 0; i < POPULATION_SIZE; i++) {
-            list.add(randomCombination(rnd));
+        Set<String> seen = new HashSet<>();
+        while (list.size() < POPULATION_SIZE) {
+            int[] combo = randomCombination(rnd);
+            String key = Arrays.toString(combo);
+            if (seen.add(key)) {
+                list.add(combo);
+            }
         }
         return list;
     }
@@ -225,13 +230,21 @@ public class BonolotoEvolver {
                     + Arrays.toString(population.get(0)));
 
             List<int[]> next = new ArrayList<>();
-            for (int i = 0; i < ELITE_SIZE; i++) next.add(Arrays.copyOf(population.get(i), 6));
+            Set<String> seen = new HashSet<>();
+            for (int i = 0; i < ELITE_SIZE; i++) {
+                int[] elite = Arrays.copyOf(population.get(i), 6);
+                next.add(elite);
+                seen.add(Arrays.toString(elite));
+            }
             while (next.size() < POPULATION_SIZE) {
                 int[] p1 = population.get(rnd.nextInt(ELITE_SIZE));
                 int[] p2 = population.get(rnd.nextInt(ELITE_SIZE));
                 int[] child = crossover(p1, p2, rnd);
                 mutate(child, rnd);
-                next.add(child);
+                String key = Arrays.toString(child);
+                if (seen.add(key)) {
+                    next.add(child);
+                }
             }
             population = next;
         }
@@ -267,13 +280,21 @@ public class BonolotoEvolver {
             LOGGER.info("Generacion " + gen + " mejor puntuacion " + score + " combinacion " + Arrays.toString(population.get(0)));
 
             List<int[]> next = new ArrayList<>();
-            for (int i = 0; i < ELITE_SIZE; i++) next.add(Arrays.copyOf(population.get(i), 6));
+            Set<String> seen = new HashSet<>();
+            for (int i = 0; i < ELITE_SIZE; i++) {
+                int[] elite = Arrays.copyOf(population.get(i), 6);
+                next.add(elite);
+                seen.add(Arrays.toString(elite));
+            }
             while (next.size() < POPULATION_SIZE) {
                 int[] p1 = population.get(rnd.nextInt(ELITE_SIZE));
                 int[] p2 = population.get(rnd.nextInt(ELITE_SIZE));
                 int[] child = crossover(p1, p2, rnd);
                 mutate(child, rnd);
-                next.add(child);
+                String key = Arrays.toString(child);
+                if (seen.add(key)) {
+                    next.add(child);
+                }
             }
             population = next;
         }

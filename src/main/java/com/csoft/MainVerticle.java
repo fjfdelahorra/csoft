@@ -138,6 +138,12 @@ public class MainVerticle extends AbstractVerticle {
 
         router.route().handler(StaticHandler.create("webroot"));
 
+        router.errorHandler(404, ctx ->
+            ctx.response()
+               .putHeader("Content-Type", "text/html")
+               .sendFile("webroot/index.html")
+        );
+
         vertx.createHttpServer()
             .requestHandler(router)
             .listen(8080);

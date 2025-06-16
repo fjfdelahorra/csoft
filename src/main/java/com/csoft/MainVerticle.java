@@ -9,6 +9,7 @@ import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 import java.util.logging.Logger;
+import java.util.logging.Level;
 
 import com.csoft.BonolotoDataDownloader;
 import com.csoft.BonolotoStats;
@@ -18,6 +19,21 @@ public class MainVerticle extends AbstractVerticle {
     private static final Logger LOGGER = Logger.getLogger(MainVerticle.class.getName());
     @Override
     public void start() {
+        Path history = Path.of("data/history.csv");
+        if (!Files.exists(history)) {
+            try (var in = getClass().getClassLoader().getResourceAsStream("webroot/history.csv")) {
+                if (in != null) {
+                    Files.createDirectories(history.getParent());
+                    Files.copy(in, history);
+                    LOGGER.info("Copiado history.csv por defecto en " + history.toAbsolutePath());
+                } else {
+                    LOGGER.warning("Recurso history.csv no encontrado");
+                }
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING, "No se pudo copiar history.csv por defecto", e);
+            }
+        }
+
         Router router = Router.router(vertx);
 
         router.get("/api/update").handler(ctx -> {

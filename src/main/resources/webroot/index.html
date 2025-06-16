@@ -245,17 +245,30 @@
           }
         }
       },
-      template: `
-        <div class="text-center">
-          <h1 class="mb-4">Algoritmo Evolutivo</h1>
-          <router-link to="/" class="btn btn-link p-0 mb-3">Volver</router-link>
-          <div class="mb-3">
-            <button class="btn btn-primary" @click="run" :disabled="running">Ejecutar algoritmo</button>
+        template: `
+          <div>
+            <h1 class="mb-4 text-center">Algoritmo Evolutivo</h1>
+            <router-link to="/" class="btn btn-link p-0 mb-3">Volver</router-link>
+            <div class="row">
+              <div class="col-md-6">
+                <p>
+                  Este algoritmo aplica un enfoque evolutivo para buscar combinaciones con
+                  mayor probabilidad de éxito. En cada generación se evalúa una población de
+                  combinaciones, se seleccionan las mejores y se generan nuevas mediante cruce
+                  y mutación. El proceso se repite varias veces hasta obtener la mejor
+                  combinación encontrada.
+                </p>
+              </div>
+              <div class="col-md-6 text-center">
+                <div class="mb-3">
+                  <button class="btn btn-primary" @click="run" :disabled="running">Ejecutar algoritmo</button>
+                </div>
+                <pre class="console" ref="console">{{ logs.join('\\n') }}</pre>
+              </div>
+            </div>
           </div>
-          <pre class="console" ref="console">{{ logs.join('\\n') }}</pre>
-        </div>
-      `
-    };
+        `
+      };
 
     const routes = [
       { path: '/', component: Home },

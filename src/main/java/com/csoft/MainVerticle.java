@@ -136,6 +136,33 @@ public class MainVerticle extends AbstractVerticle {
             });
         });
 
+        router.get("/api/evolve/test").handler(ctx -> {
+            int gens = BonolotoEvolver.DEFAULT_GENERATIONS;
+            try {
+                gens = Integer.parseInt(ctx.request().getParam("gens", Integer.toString(BonolotoEvolver.DEFAULT_GENERATIONS)));
+            } catch (NumberFormatException ignore) {}
+            final int generations = gens;
+            vertx.<BonolotoEvolver.TestResult>executeBlocking(promise -> {
+                try {
+                    var res = BonolotoEvolver.test(Path.of("data/history.csv"), generations);
+                    promise.complete(res);
+                } catch (Exception e) {
+                    promise.fail(e);
+                }
+            }, ar -> {
+                if (ar.succeeded()) {
+                    var res = ar.result();
+                    var json = new io.vertx.core.json.JsonObject()
+                            .put("steps", res.steps)
+                            .put("total", res.totalHits);
+                    ctx.response().putHeader("Content-Type", "application/json")
+                        .end(json.encode());
+                } else {
+                    ctx.fail(ar.cause());
+                }
+            });
+        });
+
         router.route().handler(StaticHandler.create("webroot"));
 
         router.errorHandler(404, ctx ->

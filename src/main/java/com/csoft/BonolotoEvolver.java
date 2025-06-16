@@ -31,6 +31,17 @@ public class BonolotoEvolver {
         }
     }
 
+    /** Result returned when running the historical tester */
+    public static class TestResult {
+        public final List<String> steps;
+        public final int totalHits;
+
+        TestResult(List<String> steps, int totalHits) {
+            this.steps = steps;
+            this.totalHits = totalHits;
+        }
+    }
+
     private static final class Stats {
         double avgEven;
         double[] avgTens = new double[5];
@@ -53,6 +64,10 @@ public class BonolotoEvolver {
 
     private static Stats loadStats(Path csv) throws IOException {
         List<BonolotoStats.DrawStat> list = BonolotoStats.compute(csv);
+        return computeStats(list);
+    }
+
+    private static Stats computeStats(List<BonolotoStats.DrawStat> list) {
         Stats s = new Stats();
         int total = list.size();
         for (BonolotoStats.DrawStat d : list) {
@@ -212,7 +227,15 @@ public class BonolotoEvolver {
         } catch (IOException e) {
             tmpStats = new Stats();
         }
-        final Stats stats = tmpStats;
+        return evolveWithStats(tmpStats, generations);
+    }
+
+    public static EvolutionResult evolve(List<BonolotoStats.DrawStat> draws, int generations) {
+        Stats stats = computeStats(draws);
+        return evolveWithStats(stats, generations);
+    }
+
+    private static EvolutionResult evolveWithStats(Stats stats, int generations) {
         Random rnd = new Random();
         List<int[]> population = generatePopulation(rnd);
         int[] best = null;
@@ -251,6 +274,39 @@ public class BonolotoEvolver {
 
         steps.add("Mejor combinacion obtenida: " + Arrays.toString(best) + " con puntuacion " + bestScore);
         return new EvolutionResult(steps, best, bestScore);
+    }
+
+    /**
+     * Runs the algorithm iteratively over the historical draws, always using
+     * the first i draws to predict the (i+1)-th. Returns the list of steps and
+     * the total number of matches obtained.
+     */
+    public static TestResult test(Path csv, int generations) throws IOException {
+        List<BonolotoStats.DrawStat> all = BonolotoStats.compute(csv);
+        List<String> steps = new ArrayList<>();
+        int totalHits = 0;
+        for (int i = 1; i < all.size(); i++) {
+            List<BonolotoStats.DrawStat> subset = all.subList(0, i);
+            EvolutionResult res = evolve(subset, generations);
+            int[] predicted = res.best;
+            int[] actual = all.get(i).numbers;
+            int hits = countMatches(predicted, actual);
+            totalHits += hits;
+            steps.add("Iteracion " + i + " prediccion " + Arrays.toString(predicted)
+                    + " real " + Arrays.toString(actual) + " aciertos " + hits);
+        }
+        steps.add("Aciertos totales: " + totalHits);
+        return new TestResult(steps, totalHits);
+    }
+
+    private static int countMatches(int[] a, int[] b) {
+        int hits = 0;
+        for (int x : a) {
+            for (int y : b) {
+                if (x == y) { hits++; break; }
+            }
+        }
+        return hits;
     }
 
     public static void main(String[] args) throws Exception {

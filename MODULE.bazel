@@ -12,6 +12,7 @@ maven.install(
     artifacts = [
         "io.vertx:vertx-core:4.5.1",
         "io.vertx:vertx-web:4.5.1",
+        "junit:junit:4.13.2",
         # Include MacOS native DNS resolver to avoid runtime warnings on Mac
         "io.netty:netty-resolver-dns-native-macos:jar:osx-aarch_64:4.1.103.Final",
     ],
@@ -23,8 +24,8 @@ use_repo(maven, "maven")
 
 python_ext = use_extension("@rules_python//python/extensions:python.bzl", "python")
 python_ext.toolchain(
-    python_version = "3.11",
-    is_default = True,
     ignore_root_user_error = True,
+    is_default = True,
+    python_version = "3.11",
 )
 use_repo(python_ext, "python_3_11")

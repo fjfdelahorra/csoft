@@ -1,12 +1,17 @@
-java_binary(
-    name = "vertx_hello",
+java_library(
+    name = "csoft_lib",
     srcs = glob(["src/main/java/**/*.java"]),
     resources = glob(["src/main/resources/**"]),
-    main_class = "com.csoft.MainVerticle",
     deps = [
         "@maven//:io_vertx_vertx_core",
         "@maven//:io_vertx_vertx_web",
     ],
+)
+
+java_binary(
+    name = "vertx_hello",
+    main_class = "com.csoft.MainVerticle",
+    deps = [":csoft_lib"],
 )
 
 java_binary(
@@ -31,4 +36,16 @@ java_binary(
         "src/main/java/com/csoft/BonolotoStats.java",
     ],
     main_class = "com.csoft.BonolotoEvolver",
+)
+
+java_test(
+    name = "server_test",
+    srcs = ["src/test/java/com/csoft/MainVerticleTest.java"],
+    test_class = "com.csoft.MainVerticleTest",
+    deps = [
+        ":csoft_lib",
+        "@maven//:junit_junit",
+        "@maven//:io_vertx_vertx_core",
+        "@maven//:io_vertx_vertx_web",
+    ],
 )

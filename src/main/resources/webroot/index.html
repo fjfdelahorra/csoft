@@ -225,13 +225,13 @@
 
   const Evolver = {
       data() {
-        return { logs: [], running: false };
+        return { logs: [], running: false, generations: 50 };
       },
       methods: {
         async run() {
           this.running = true;
           try {
-            const res = await fetch('/api/evolve');
+            const res = await fetch(`/api/evolve?gens=${this.generations}`);
             const json = await res.json();
             this.logs = json.steps.concat([`Mejor: ${json.best.join(', ')} puntuación ${json.score}`]);
             this.$nextTick(() => {
@@ -260,7 +260,8 @@
                 </p>
               </div>
               <div class="col-md-6 text-center">
-                <div class="mb-3">
+                <div class="mb-3 d-flex gap-2 justify-content-center">
+                  <input type="number" class="form-control" style="max-width:120px;" v-model.number="generations" min="1">
                   <button class="btn btn-primary" @click="run" :disabled="running">Ejecutar algoritmo</button>
                 </div>
                 <pre class="console" ref="console">{{ logs.join('\\n') }}</pre>

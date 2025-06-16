@@ -109,9 +109,14 @@ public class MainVerticle extends AbstractVerticle {
         });
 
         router.get("/api/evolve").handler(ctx -> {
+            int gens = BonolotoEvolver.DEFAULT_GENERATIONS;
+            try {
+                gens = Integer.parseInt(ctx.request().getParam("gens", Integer.toString(BonolotoEvolver.DEFAULT_GENERATIONS)));
+            } catch (NumberFormatException ignore) {}
+            final int generations = gens;
             vertx.<BonolotoEvolver.EvolutionResult>executeBlocking(promise -> {
                 try {
-                    var res = BonolotoEvolver.evolve(Path.of("data/history.csv"));
+                    var res = BonolotoEvolver.evolve(Path.of("data/history.csv"), generations);
                     promise.complete(res);
                 } catch (Exception e) {
                     promise.fail(e);

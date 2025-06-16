@@ -17,7 +17,7 @@ public class BonolotoEvolver {
     private static final Logger LOGGER = Logger.getLogger(BonolotoEvolver.class.getName());
     private static final int POPULATION_SIZE = 100;
     private static final int ELITE_SIZE = 20;
-    private static final int GENERATIONS = 50;
+    public static final int DEFAULT_GENERATIONS = 50;
 
     public static class EvolutionResult {
         public final List<String> steps;
@@ -197,6 +197,10 @@ public class BonolotoEvolver {
      * along with the best combination found and its score.
      */
     public static EvolutionResult evolve(Path csv) throws IOException {
+        return evolve(csv, DEFAULT_GENERATIONS);
+    }
+
+    public static EvolutionResult evolve(Path csv, int generations) throws IOException {
         Stats tmpStats;
         try {
             tmpStats = loadStats(csv);
@@ -210,7 +214,7 @@ public class BonolotoEvolver {
         double bestScore = Double.NEGATIVE_INFINITY;
         List<String> steps = new ArrayList<>();
 
-        for (int gen = 1; gen <= GENERATIONS; gen++) {
+        for (int gen = 1; gen <= generations; gen++) {
             population.sort((x, y) -> Double.compare(fitness(y, stats), fitness(x, stats)));
             double score = fitness(population.get(0), stats);
             if (score > bestScore) {
@@ -238,6 +242,7 @@ public class BonolotoEvolver {
 
     public static void main(String[] args) throws Exception {
         Path csv = Path.of(args.length > 0 ? args[0] : "data/history.csv");
+        int generations = args.length > 1 ? Integer.parseInt(args[1]) : DEFAULT_GENERATIONS;
         Stats tmpStats;
         try {
             tmpStats = loadStats(csv);
@@ -252,7 +257,7 @@ public class BonolotoEvolver {
         int[] best = null;
         double bestScore = Double.NEGATIVE_INFINITY;
 
-        for (int gen = 1; gen <= GENERATIONS; gen++) {
+        for (int gen = 1; gen <= generations; gen++) {
             population.sort((x, y) -> Double.compare(fitness(y, stats), fitness(x, stats)));
             double score = fitness(population.get(0), stats);
             if (score > bestScore) {

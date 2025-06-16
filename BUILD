@@ -11,7 +11,7 @@ java_library(
 java_binary(
     name = "vertx_hello",
     main_class = "com.csoft.MainVerticle",
-    deps = [":csoft_lib"],
+    runtime_deps = [":csoft_lib"],
 )
 
 java_binary(
